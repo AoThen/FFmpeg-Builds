@@ -17,6 +17,11 @@ on:
         type: boolean
         default: false
         required: false
+      # buildver:
+      #   description: 'ffmpeg ver'
+      #   type: string
+      #   default: 'gpl,gpl 5.1,gpl 7.1'
+      #   required: false
   # schedule:
   #   - cron: '0 12 * * *'
 
@@ -173,7 +178,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64,win32]
-        variant: [gpl,gpl 4.4,gpl 7.0]
+        variant: [gpl,gpl 5.1,gpl 7.1]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc && df -h
@@ -238,7 +243,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64,win32]
-        variant: [gpl,gpl 4.4,gpl 7.0]
+        variant: [gpl,gpl 5.1,gpl 7.1]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc && df -h
