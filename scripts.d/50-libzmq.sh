@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/zeromq/libzmq.git"
-SCRIPT_COMMIT="34f7fa22022bed9e0e390ed3580a1c83ac4a2834"
+SCRIPT_COMMIT="46493370217ac135246617fa2f6ac819d8b61bfc"
 
 ffbuild_enabled() {
     return 0
@@ -31,12 +31,12 @@ ffbuild_dockerbuild() {
 
     cmake "${myconf[@]}" ..
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
     {
         echo "Cflags.private: -DZMQ_NO_EXPORT -DZMQ_STATIC"
         [[ $TARGET != win* ]] || echo "Libs.private: -lws2_32 -liphlpapi"
-    } >> "$FFBUILD_PREFIX"/lib/pkgconfig/libzmq.pc
+    } >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/libzmq.pc
 }
 
 ffbuild_configure() {

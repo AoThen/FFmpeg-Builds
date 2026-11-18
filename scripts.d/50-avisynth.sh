@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/AviSynth/AviSynthPlus.git"
-SCRIPT_COMMIT="70b9d6616168931adbd62f964b552c1936e63cdc"
+SCRIPT_COMMIT="5da089a5889a69ebacc25139c7718b4ab12f3cfb"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
@@ -16,7 +16,7 @@ ffbuild_dockerbuild() {
 
     cmake -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" -DHEADERS_ONLY=ON ..
     make -j$(nproc)
-    make VersionGen install
+    make VersionGen install DESTDIR="$FFBUILD_DESTDIR"
 }
 
 ffbuild_configure() {

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/drobilla/serd.git"
-SCRIPT_COMMIT="c701c58a43d7f5446b5594b73664a7f6d9812e27"
+SCRIPT_COMMIT="b621b0bc790d1e8102d3138ead16b974ddda8432"
 
 ffbuild_enabled() {
     return 0
@@ -30,5 +30,5 @@ ffbuild_dockerbuild() {
 
     meson "${myconf[@]}" ..
     ninja -j"$(nproc)"
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 }

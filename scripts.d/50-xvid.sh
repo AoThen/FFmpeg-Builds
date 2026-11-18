@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://svn.xvid.org/trunk/xvidcore"
-SCRIPT_REV="2202"
+SCRIPT_REV="2204"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
@@ -38,12 +38,12 @@ ffbuild_dockerbuild() {
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
     if [[ $TARGET == win* ]]; then
-        rm "$FFBUILD_PREFIX"/{bin/libxvidcore.dll,lib/libxvidcore.dll.a}
+        rm "$FFBUILD_DESTPREFIX"/{bin/libxvidcore.dll,lib/libxvidcore.dll.a}
     elif [[ $TARGET == linux* ]]; then
-        rm "$FFBUILD_PREFIX"/lib/libxvidcore.so*
+        rm "$FFBUILD_DESTPREFIX"/lib/libxvidcore.so*
     fi
 }
 

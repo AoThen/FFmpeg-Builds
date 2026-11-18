@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxrender.git"
-SCRIPT_COMMIT="01c4bb5b30bbb09921ca4042da369a60a73faefa"
+SCRIPT_COMMIT="3aff9046bc91b31cc3dd6974876c29bc309a250a"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -34,12 +34,12 @@ ffbuild_dockerbuild() {
     fi
 
     export CFLAGS="$RAW_CFLAGS"
-    export LDFLAFS="$RAW_LDFLAGS"
+    export LDFLAGS="$RAW_LDFLAGS"
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
-    gen-implib "$FFBUILD_PREFIX"/lib/{libXrender.so.1,libXrender.a}
-    rm "$FFBUILD_PREFIX"/lib/libXrender{.so*,.la}
+    gen-implib "$FFBUILD_DESTPREFIX"/lib/{libXrender.so.1,libXrender.a}
+    rm "$FFBUILD_DESTPREFIX"/lib/libXrender{.so*,.la}
 }

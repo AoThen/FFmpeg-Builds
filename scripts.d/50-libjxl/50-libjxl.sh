@@ -1,13 +1,16 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/libjxl/libjxl.git"
-SCRIPT_COMMIT="c496c521f99c13b8205c4fc4ff3eb3d652a1d1c3"
+SCRIPT_COMMIT="a14f4e0ff32c07cbd19eae144c850e8bbfee2261"
+
+ffbuild_depends() {
+    echo base
+    echo brotli
+    echo lcms2
+}
 
 ffbuild_enabled() {
-    [[ $ADDINS_STR == *4.4* ]] && return -1
-    [[ $ADDINS_STR == *5.0* ]] && return -1
-    [[ $ADDINS_STR == *5.1* ]] && return -1
-    [[ $ADDINS_STR == *6.0* ]] && return -1
+    (( $(ffbuild_ffver) > 600 )) || return -1
     return 0
 }
 
@@ -34,17 +37,17 @@ ffbuild_dockerbuild() {
         -DJPEGXL_ENABLE_JPEGLI=OFF -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_EXAMPLES=OFF -DJPEGXL_ENABLE_MANPAGES=OFF -DJPEGXL_ENABLE_JNI=OFF -DJPEGXL_ENABLE_PLUGINS=OFF \
         -DJPEGXL_ENABLE_DEVTOOLS=OFF -DJPEGXL_ENABLE_BENCHMARK=OFF -DJPEGXL_BUNDLE_LIBPNG=OFF -DJPEGXL_ENABLE_SJPEG=OFF -DJPEGXL_FORCE_SYSTEM_BROTLI=ON ..
     ninja -j$(nproc)
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 
     if [[ $TARGET == win* ]]; then
-        echo "Libs.private: -lstdc++ -ladvapi32" >> "${FFBUILD_PREFIX}"/lib/pkgconfig/libjxl.pc
-        echo "Libs.private: -lstdc++ -ladvapi32" >> "${FFBUILD_PREFIX}"/lib/pkgconfig/libjxl_threads.pc
+        echo "Libs.private: -lstdc++ -ladvapi32" >> "${FFBUILD_DESTPREFIX}"/lib/pkgconfig/libjxl.pc
+        echo "Libs.private: -lstdc++ -ladvapi32" >> "${FFBUILD_DESTPREFIX}"/lib/pkgconfig/libjxl_threads.pc
     else
-        echo "Libs.private: -lstdc++" >> "${FFBUILD_PREFIX}"/lib/pkgconfig/libjxl.pc
-        echo "Libs.private: -lstdc++" >> "${FFBUILD_PREFIX}"/lib/pkgconfig/libjxl_threads.pc
+        echo "Libs.private: -lstdc++" >> "${FFBUILD_DESTPREFIX}"/lib/pkgconfig/libjxl.pc
+        echo "Libs.private: -lstdc++" >> "${FFBUILD_DESTPREFIX}"/lib/pkgconfig/libjxl_threads.pc
     fi
 
-    echo "Requires.private: lcms2" >> "${FFBUILD_PREFIX}"/lib/pkgconfig/libjxl_cms.pc
+    echo "Requires.private: lcms2" >> "${FFBUILD_DESTPREFIX}"/lib/pkgconfig/libjxl_cms.pc
 }
 
 ffbuild_configure() {
@@ -52,7 +55,6 @@ ffbuild_configure() {
 }
 
 ffbuild_unconfigure() {
-    [[ $ADDINS_STR == *4.4* ]] && return 0
-    [[ $ADDINS_STR == *5.0* ]] && return 0
+    (( $(ffbuild_ffver) > 500 )) || return 0
     echo --disable-libjxl
 }

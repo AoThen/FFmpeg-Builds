@@ -1,9 +1,10 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://code.videolan.org/videolan/dav1d.git"
-SCRIPT_COMMIT="8d956180934f16244bdb58b39175824775125e55"
+SCRIPT_COMMIT="6c7bee685677fd997a431302be4fea8ea4017606"
 
 ffbuild_enabled() {
+    (( $(ffbuild_ffver) >= 404 )) || return -1
     return 0
 }
 
@@ -27,7 +28,7 @@ ffbuild_dockerbuild() {
 
     meson "${myconf[@]}" ..
     ninja -j$(nproc)
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 }
 
 ffbuild_configure() {
@@ -35,5 +36,6 @@ ffbuild_configure() {
 }
 
 ffbuild_unconfigure() {
+    (( $(ffbuild_ffver) >= 404 )) || return 0
     echo --disable-libdav1d
 }

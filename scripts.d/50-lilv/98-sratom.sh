@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/lv2/sratom.git"
-SCRIPT_COMMIT="3bab3fa5495b0445729da54796514f454324257b"
+SCRIPT_COMMIT="9e8ee84eed502e6030ce8bb49694fd28542b08fc"
 
 ffbuild_enabled() {
     return 0
@@ -29,5 +29,5 @@ ffbuild_dockerbuild() {
 
     meson "${myconf[@]}" ..
     ninja -j"$(nproc)"
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 }

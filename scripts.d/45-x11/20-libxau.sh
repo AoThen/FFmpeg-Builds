@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxau.git"
-SCRIPT_COMMIT="eb1d1d7f2dc9888609ed65df6348dc3a46bc207d"
+SCRIPT_COMMIT="be1daeb909f1d678e7859ac1555e90b4e768d5c4"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -28,12 +28,12 @@ ffbuild_dockerbuild() {
     fi
 
     export CFLAGS="$RAW_CFLAGS"
-    export LDFLAFS="$RAW_LDFLAGS"
+    export LDFLAGS="$RAW_LDFLAGS"
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
-    gen-implib "$FFBUILD_PREFIX"/lib/{libXau.so.6,libXau.a}
-    rm "$FFBUILD_PREFIX"/lib/libXau{.so*,.la}
+    gen-implib "$FFBUILD_DESTPREFIX"/lib/{libXau.so.6,libXau.a}
+    rm "$FFBUILD_DESTPREFIX"/lib/libXau{.so*,.la}
 }

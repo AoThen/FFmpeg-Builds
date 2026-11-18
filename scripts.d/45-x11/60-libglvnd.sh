@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/glvnd/libglvnd.git"
-SCRIPT_COMMIT="606f6627cf481ee6dcb32387edc010c502cdf38b"
+SCRIPT_COMMIT="8731041dbd78566bffafb5145aec8b8df8b5260e"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -35,5 +35,14 @@ ffbuild_dockerbuild() {
 
     meson "${myconf[@]}" ..
     ninja -j"$(nproc)"
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
+
+    for LIB in libGL.so.1 libGLX.so.0 libOpenGL.so.0 libEGL.so.1 libGLESv1_CM.so.1 libGLESv2.so.2; do
+        gen-implib "$FFBUILD_DESTPREFIX"/lib/{"${LIB}","${LIB%%.*}.a"}
+        rm "$FFBUILD_DESTPREFIX"/lib/"${LIB%%.*}".so*
+    done
+
+    for LIB in gl glx opengl egl glesv1_cm glesv2; do
+        echo "Libs: -ldl" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/"${LIB}".pc
+    done
 }

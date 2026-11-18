@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/Netflix/vmaf.git"
-SCRIPT_COMMIT="8b2582db3b1d28c460393b4fea13cda435236832"
+SCRIPT_COMMIT="cf677baaa039723876fff8c2677164f25102e684"
 
 ffbuild_enabled() {
     return 0
@@ -20,9 +20,20 @@ ffbuild_dockerbuild() {
         -Dbuilt_in_models=true
         -Denable_tests=false
         -Denable_docs=false
-        -Denable_avx512=true
         -Denable_float=true
     )
+
+    if [[ $TARGET == *32 ]]; then
+        myconf+=(
+            -Denable_avx512=false
+            -Denable_asm=false
+        )
+    else
+        myconf+=(
+            -Denable_avx512=true
+            -Denable_asm=true
+        )
+    fi
 
     if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
@@ -35,14 +46,13 @@ ffbuild_dockerbuild() {
 
     meson "${myconf[@]}" ../libvmaf || cat meson-logs/meson-log.txt
     ninja -j"$(nproc)"
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 
-    sed -i 's/Libs.private:/Libs.private: -lstdc++/; t; $ a Libs.private: -lstdc++' "$FFBUILD_PREFIX"/lib/pkgconfig/libvmaf.pc
+    sed -i 's/Libs.private:/Libs.private: -lstdc++/; t; $ a Libs.private: -lstdc++' "$FFBUILD_DESTPREFIX"/lib/pkgconfig/libvmaf.pc
 }
 
 ffbuild_configure() {
-    [[ $ADDINS_STR == *4.4* ]] && return 0
-    [[ $ADDINS_STR == *5.0* ]] && return 0
+    (( $(ffbuild_ffver) >= 501 )) || return 0
     echo --enable-libvmaf
 }
 

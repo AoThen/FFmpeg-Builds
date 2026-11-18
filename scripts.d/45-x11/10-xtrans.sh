@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxtrans.git"
-SCRIPT_COMMIT="cf05ba4a10c90da2c63805a5375e983b174e28b0"
+SCRIPT_COMMIT="79f6b0bfe2170496e8c37626043d009f4cd3f1e1"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -29,7 +29,7 @@ ffbuild_dockerbuild() {
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
-    cp -r "$FFBUILD_PREFIX"/share/aclocal/. /usr/share/aclocal
+    cp -r "$FFBUILD_DESTPREFIX"/share/aclocal/. /usr/share/aclocal
 }

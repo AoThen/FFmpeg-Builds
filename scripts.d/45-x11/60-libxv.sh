@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxv.git"
-SCRIPT_COMMIT="f34c717e9af0b1618699f4cf2f9aed277085c880"
+SCRIPT_COMMIT="f315ec50fcad9bdbaed46c3e78dc5e7fe209f933"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -36,14 +36,14 @@ ffbuild_dockerbuild() {
     fi
 
     export CFLAGS="$RAW_CFLAGS"
-    export LDFLAFS="$RAW_LDFLAGS"
+    export LDFLAGS="$RAW_LDFLAGS"
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
-    gen-implib "$FFBUILD_PREFIX"/lib/{libXv.so.1,libXv.a}
-    rm "$FFBUILD_PREFIX"/lib/libXv{.so*,.la}
+    gen-implib "$FFBUILD_DESTPREFIX"/lib/{libXv.so.1,libXv.a}
+    rm "$FFBUILD_DESTPREFIX"/lib/libXv{.so*,.la}
 }
 
 ffbuild_configure() {

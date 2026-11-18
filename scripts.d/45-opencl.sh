@@ -1,10 +1,10 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/KhronosGroup/OpenCL-Headers.git"
-SCRIPT_COMMIT="bb1dc2e5882378817831ae17ba7391b3e23efa81"
+SCRIPT_COMMIT="82f60316cc142e7b21dc1d8983b26de18858fbd9"
 
 SCRIPT_REPO2="https://github.com/KhronosGroup/OpenCL-ICD-Loader.git"
-SCRIPT_COMMIT2="86448ce4e47bc59688c58e7542ebfa4d7568c0de"
+SCRIPT_COMMIT2="d0be526adb156de7f701024acc811182c984d4c5"
 
 ffbuild_enabled() {
     return 0
@@ -16,18 +16,18 @@ ffbuild_dockerdl() {
 }
 
 ffbuild_dockerbuild() {
-    mkdir -p "$FFBUILD_PREFIX"/include/CL
-    cp -r headers/CL/* "$FFBUILD_PREFIX"/include/CL/.
+    mkdir -p "$FFBUILD_DESTPREFIX"/include/CL
+    cp -r headers/CL/* "$FFBUILD_DESTPREFIX"/include/CL/.
 
     cd loader
     mkdir build && cd build
 
     cmake -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" \
-        -DOPENCL_ICD_LOADER_HEADERS_DIR="$FFBUILD_PREFIX"/include -DOPENCL_ICD_LOADER_BUILD_SHARED_LIBS=OFF \
+        -DOPENCL_ICD_LOADER_HEADERS_DIR="$FFBUILD_DESTPREFIX"/include -DOPENCL_ICD_LOADER_BUILD_SHARED_LIBS=OFF \
         -DOPENCL_ICD_LOADER_DISABLE_OPENCLON12=ON -DOPENCL_ICD_LOADER_PIC=ON \
         -DOPENCL_ICD_LOADER_BUILD_TESTING=OFF -DBUILD_TESTING=OFF ..
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
     echo "prefix=$FFBUILD_PREFIX" > OpenCL.pc
     echo "exec_prefix=\${prefix}" >> OpenCL.pc
@@ -47,8 +47,8 @@ ffbuild_dockerbuild() {
         echo "Libs.private: -lole32 -lshlwapi -lcfgmgr32" >> OpenCL.pc
     fi
 
-    mkdir -p "$FFBUILD_PREFIX"/lib/pkgconfig
-    mv OpenCL.pc "$FFBUILD_PREFIX"/lib/pkgconfig/OpenCL.pc
+    mkdir -p "$FFBUILD_DESTPREFIX"/lib/pkgconfig
+    mv OpenCL.pc "$FFBUILD_DESTPREFIX"/lib/pkgconfig/OpenCL.pc
 }
 
 ffbuild_configure() {

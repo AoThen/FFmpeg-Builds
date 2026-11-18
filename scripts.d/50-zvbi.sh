@@ -1,9 +1,15 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/zapping-vbi/zvbi"
-SCRIPT_COMMIT="5169a428d51c3ae8ff7b0897e8a687d8e05e37b5"
+SCRIPT_COMMIT="34bb6f660c5c1bacd4a66cc7b22311e4ca3c1ab5"
+
+ffbuild_depends() {
+    echo base
+    echo libiconv
+}
 
 ffbuild_enabled() {
+    [[ $VARIANT == nonfree* ]] || return -1
     return 0
 }
 
@@ -34,8 +40,8 @@ ffbuild_dockerbuild() {
 
     ./configure "${myconf[@]}"
     make -C src -j$(nproc)
-    make -C src install
-    make SUBDIRS=. install
+    make -C src install DESTDIR="$FFBUILD_DESTDIR"
+    make SUBDIRS=. install DESTDIR="$FFBUILD_DESTDIR"
 }
 
 ffbuild_configure() {

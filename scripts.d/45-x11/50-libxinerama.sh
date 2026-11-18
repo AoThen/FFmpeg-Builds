@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxinerama.git"
-SCRIPT_COMMIT="2344df8f821f9becc8aaa6af939b535b51d4a332"
+SCRIPT_COMMIT="92d8f35d672537721dcd3a071d04306aa065c29b"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -34,12 +34,12 @@ ffbuild_dockerbuild() {
     fi
 
     export CFLAGS="$RAW_CFLAGS"
-    export LDFLAFS="$RAW_LDFLAGS"
+    export LDFLAGS="$RAW_LDFLAGS"
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
-    gen-implib "$FFBUILD_PREFIX"/lib/{libXinerama.so.1,libXinerama.a}
-    rm "$FFBUILD_PREFIX"/lib/libXinerama{.so*,.la}
+    gen-implib "$FFBUILD_DESTPREFIX"/lib/{libXinerama.so.1,libXinerama.a}
+    rm "$FFBUILD_DESTPREFIX"/lib/libXinerama{.so*,.la}
 }

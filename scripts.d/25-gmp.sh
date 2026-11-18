@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/BtbN/gmplib.git"
-SCRIPT_COMMIT="655b673c0c825a772b2596d9761ffc3dd953074e"
+SCRIPT_COMMIT="f9095918ead819c0a2340232891b5acac24b8085"
 
 ffbuild_enabled() {
     return 0
@@ -29,7 +29,7 @@ ffbuild_dockerbuild() {
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 }
 
 ffbuild_configure() {

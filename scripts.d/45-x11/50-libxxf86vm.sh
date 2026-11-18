@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxxf86vm.git"
-SCRIPT_COMMIT="b7d0126604e74871844fcecda04d45bb25988a2c"
+SCRIPT_COMMIT="cf0c73fe2d5847eec3fb966487769f460c722cc4"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -34,12 +34,12 @@ ffbuild_dockerbuild() {
     fi
 
     export CFLAGS="$RAW_CFLAGS"
-    export LDFLAFS="$RAW_LDFLAGS"
+    export LDFLAGS="$RAW_LDFLAGS"
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
-    gen-implib "$FFBUILD_PREFIX"/lib/{libXxf86vm.so.1,libXxf86vm.a}
-    rm "$FFBUILD_PREFIX"/lib/libXxf86vm{.so*,.la}
+    gen-implib "$FFBUILD_DESTPREFIX"/lib/{libXxf86vm.so.1,libXxf86vm.a}
+    rm "$FFBUILD_DESTPREFIX"/lib/libXxf86vm{.so*,.la}
 }
